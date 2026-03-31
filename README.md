@@ -140,11 +140,3 @@ Key skills:
 | `session-handoff` | When a session is running long or needs to pause |
 | `release-readiness` | Before opening an MR |
 | `hooks-setup` | When installing the harness on a new repo |
-
----
-
-## Further Reading
-
-- [Setting the Rig: Engineering Agent Harnesses for Production](https://github.com/Jeffskins1/ghcp-harness) — article covering harness engineering concepts and this harness as a worked example
-- `resources/skills/hooks-setup/SKILL.md` — full installation walkthrough
-- `scripts/workflow/README.md` — workflow command reference
