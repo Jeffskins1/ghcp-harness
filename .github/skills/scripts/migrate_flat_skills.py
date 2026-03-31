@@ -172,7 +172,7 @@ def build_legacy_alias(slug: str) -> str:
     return (
         f"# Legacy Alias: {skill['display_name']}\n\n"
         "This compatibility entry now points to the canonical skill package at "
-        f"`resources/skills/{slug}/SKILL.md`.\n\n"
+        f"`.github/skills/{slug}/SKILL.md`.\n\n"
         f"Use the `{slug}` skill name in Codex/OpenAI and Copilot skill runtimes. "
         f"For GitHub Copilot prompt-file workflows, use `/use-{slug}`.\n"
     )
@@ -196,7 +196,7 @@ def rewrite_readme(skills_root: Path) -> None:
         "# ICTT Skills Library",
         "",
         "This directory contains canonical multi-agent skill packages for the ICTT workflow.",
-        "Each canonical skill now lives in `resources/skills/<skill-name>/SKILL.md`.",
+        "Each canonical skill now lives in `.github/skills/<skill-name>/SKILL.md`.",
         "",
         "## Canonical Skills",
         "",
@@ -216,7 +216,7 @@ def rewrite_readme(skills_root: Path) -> None:
             "## Compatibility",
             "",
             "- Root-level `*.md` files are retained as legacy aliases that point to the canonical folders.",
-            "- Prefer linking to `resources/skills/<skill-name>/SKILL.md` in new docs and prompts.",
+            "- Prefer linking to `.github/skills/<skill-name>/SKILL.md` in new docs and prompts.",
         ]
     )
     (skills_root / "README.md").write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
@@ -234,8 +234,8 @@ def rewrite_repo_paths(repo_root: Path) -> None:
         updated = original
         for slug in SKILL_ORDER:
             updated = updated.replace(
-                f"resources/skills/{slug}.md",
-                f"resources/skills/{slug}/SKILL.md",
+                f".github/skills/{slug}.md",
+                f".github/skills/{slug}/SKILL.md",
             )
         if updated != original:
             path.write_text(updated, encoding="utf-8")

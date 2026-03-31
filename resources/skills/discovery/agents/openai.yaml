@@ -1,7 +1,0 @@
-interface:
-  display_name: "Discovery"
-  short_description: "Ground the task in existing behavior"
-  default_prompt: "Use $discovery to inspect the current implementation and summarize the existing behavior, constraints, and relevant files."
-
-policy:
-  allow_implicit_invocation: true

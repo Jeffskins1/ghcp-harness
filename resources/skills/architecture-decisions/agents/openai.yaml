@@ -1,7 +1,0 @@
-interface:
-  display_name: "Architecture Decisions"
-  short_description: "Lock interfaces and boundaries before build"
-  default_prompt: "Use $architecture-decisions to lock the interfaces, boundaries, constraints, and top risks for this change."
-
-policy:
-  allow_implicit_invocation: true

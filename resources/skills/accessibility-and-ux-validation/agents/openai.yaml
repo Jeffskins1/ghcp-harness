@@ -1,7 +1,0 @@
-interface:
-  display_name: "Accessibility And UX Validation"
-  short_description: "Validate accessibility and UX before ship"
-  default_prompt: "Use $accessibility-and-ux-validation to review this interface for usability, accessibility, and pre-release issues."
-
-policy:
-  allow_implicit_invocation: true

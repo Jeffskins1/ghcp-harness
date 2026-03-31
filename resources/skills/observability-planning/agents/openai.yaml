@@ -1,7 +1,0 @@
-interface:
-  display_name: "Observability Planning"
-  short_description: "Plan logs, metrics, traces, and alerts"
-  default_prompt: "Use $observability-planning to define the logs, metrics, traces, alerts, and diagnostics for this feature."
-
-policy:
-  allow_implicit_invocation: true

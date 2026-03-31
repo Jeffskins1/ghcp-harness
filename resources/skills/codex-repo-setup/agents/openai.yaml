@@ -1,7 +1,0 @@
-interface:
-  display_name: "Codex Repo Setup"
-  short_description: "Bootstrap a repo for Codex workflows"
-  default_prompt: "Use $codex-repo-setup to inspect this repo and create the baseline Codex instructions and shared spec scaffolding."
-
-policy:
-  allow_implicit_invocation: true

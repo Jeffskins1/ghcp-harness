@@ -1,7 +1,0 @@
-interface:
-  display_name: "Test-Driven Development"
-  short_description: "Drive red-green-refactor from the spec"
-  default_prompt: "Use $test-driven-development to drive this task from failing tests to green validation and safe refactoring."
-
-policy:
-  allow_implicit_invocation: true

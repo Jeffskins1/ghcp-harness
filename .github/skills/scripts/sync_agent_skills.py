@@ -15,8 +15,8 @@ def build_prompt_file(slug: str) -> str:
         "agent: 'agent'\n"
         f"description: '{skill['short_description']}'\n"
         "---\n\n"
-        f"Read `resources/skills/{slug}/SKILL.md` and follow that skill for this task.\n"
-        f"Only load files under `resources/skills/{slug}/references/` if they are relevant.\n\n"
+        f"Read `.github/skills/{slug}/SKILL.md` and follow that skill for this task.\n"
+        f"Only load files under `.github/skills/{slug}/references/` if they are relevant.\n\n"
         "Task: ${input:task:Describe the task for this skill}\n"
         "Context: ${input:context:Optional files, specs, tickets, or constraints}\n"
     )
@@ -29,7 +29,7 @@ def build_kiro_steering(slug: str, skill_dir: Path) -> str:
     if refs_dir.exists():
         for ref in sorted(refs_dir.glob("*.md")):
             reference_lines.append(
-                f"- `#[[file:resources/skills/{slug}/references/{ref.name}]]` - load only when the task needs that detail."
+                f"- `#[[file:.github/skills/{slug}/references/{ref.name}]]` - load only when the task needs that detail."
             )
 
     lines = [
@@ -38,7 +38,7 @@ def build_kiro_steering(slug: str, skill_dir: Path) -> str:
         skill["description"],
         "",
         "Primary instructions:",
-        f"- `#[[file:resources/skills/{slug}/SKILL.md]]`",
+        f"- `#[[file:.github/skills/{slug}/SKILL.md]]`",
     ]
     if reference_lines:
         lines.extend(["", "Optional references:"])

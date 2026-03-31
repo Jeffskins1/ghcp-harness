@@ -125,7 +125,7 @@ Check that the following exist. If any are missing, run the repo-setup skill:
 
 ### Step 2 - Copy hook scripts
 
-Copy all scripts from `resources/hooks/` into `scripts/hooks/` in the repo root.
+Copy all scripts from `scripts/hooks/` in the harness repo into `scripts/hooks/` in the target repo root.
 Create the `scripts/hooks/` and `scripts/hooks/git/` folders if they don't exist.
 
 ```

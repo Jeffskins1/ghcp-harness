@@ -1,7 +1,0 @@
-interface:
-  display_name: "Writing Plans"
-  short_description: "Split an approved spec into atomic tasks"
-  default_prompt: "Use $writing-plans to break this approved spec into atomic, ordered, agent-sized implementation tasks."
-
-policy:
-  allow_implicit_invocation: true

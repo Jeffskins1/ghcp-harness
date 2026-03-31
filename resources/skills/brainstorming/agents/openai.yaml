@@ -1,7 +1,0 @@
-interface:
-  display_name: "Brainstorming"
-  short_description: "Refine feature intent before planning"
-  default_prompt: "Use $brainstorming to refine the intent, scope, edge cases, and decision points for this feature."
-
-policy:
-  allow_implicit_invocation: true

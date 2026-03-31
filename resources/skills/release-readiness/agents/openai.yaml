@@ -1,7 +1,0 @@
-interface:
-  display_name: "Release Readiness"
-  short_description: "Confirm the change is ready to ship"
-  default_prompt: "Use $release-readiness to confirm this change is ready for reviewer handoff, merge, or release."
-
-policy:
-  allow_implicit_invocation: true

@@ -1,7 +1,0 @@
-interface:
-  display_name: "VS Code Repo Setup"
-  short_description: "Bootstrap VS Code and Copilot repo setup"
-  default_prompt: "Use $vscode-repo-setup to inspect this repo and create the VS Code Copilot instructions and shared spec scaffolding."
-
-policy:
-  allow_implicit_invocation: true

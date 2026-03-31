@@ -1,7 +1,0 @@
-interface:
-  display_name: "Implementation Plans"
-  short_description: "Turn specs into executable task order"
-  default_prompt: "Use $implementation-plans to turn the approved spec into ordered implementation tasks, dependencies, and done conditions."
-
-policy:
-  allow_implicit_invocation: true

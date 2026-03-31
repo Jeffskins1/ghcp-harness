@@ -28,25 +28,23 @@ The harness controls how the agent works through a feature — from intent captu
 ## Structure
 
 ```
-resources/          Canonical source for all harness assets
-  hooks/            Hook scripts (source of truth)
-  skills/           Skill prompt files per workflow mode
+.github/
+  hooks/            hooks.json and protected-paths.txt
+  skills/           Skill prompt files (edit here)
+  prompts/          Generated prompt stubs per skill
+
+scripts/
+  hooks/            Hook scripts (edit here)
+  workflow/         Workflow commands (start-feature, mark-red, complete-task, etc.)
+  sync/             Prompt regeneration tool
+
+resources/
   instructions/     Copilot instructions template
   spec/             Spec templates (basic and advanced)
   templates/        Evaluator result and entry templates
-
-scripts/
-  hooks/            Runtime copies of hook scripts (synced from resources/)
-  workflow/         Workflow commands (start-feature, mark-red, complete-task, etc.)
-  sync/             Asset sync tool
-
-.github/
-  hooks/            hooks.json wired for GitHub Copilot
-  skills/           Runtime skill copies (synced from resources/)
-  prompts/          Generated prompt files per skill
 ```
 
-`resources/` is the canonical edit tree. `scripts/hooks/`, `.github/skills/`, and `.github/prompts/` are generated outputs. Regenerate them after editing resources:
+After adding or removing a skill under `.github/skills/`, regenerate the prompt stubs:
 
 ```bash
 python scripts/sync/sync_runtime_assets.py
@@ -61,8 +59,9 @@ python scripts/sync/sync_runtime_assets.py
 Copy the following into your target repo:
 
 ```
-.github/hooks/hooks.json
-.github/hooks/protected-paths.txt
+.github/hooks/
+.github/skills/
+.github/prompts/
 scripts/hooks/
 scripts/workflow/
 scripts/sync/
