@@ -104,8 +104,10 @@ $folders = @(
     "scripts",
     "scripts/hooks",
     "scripts/hooks/git",
+    "scripts/sync",
     "scripts/workflow",
     "resources",
+    "resources/spec",
     "resources/templates",
     "specs",
     "specs/features",
@@ -130,7 +132,9 @@ if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot ".git"))) {
 Write-Step "Copying harness assets"
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot "scripts/hooks") -Destination (Join-Path $ProjectRoot "scripts/hooks")
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot "scripts/workflow") -Destination (Join-Path $ProjectRoot "scripts/workflow")
+Copy-DirectoryContents -Source (Join-Path $HarnessRoot "resources/spec") -Destination (Join-Path $ProjectRoot "resources/spec")
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot "resources/templates") -Destination (Join-Path $ProjectRoot "resources/templates")
+Copy-DirectoryContents -Source (Join-Path $HarnessRoot "scripts/sync") -Destination (Join-Path $ProjectRoot "scripts/sync")
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot ".github/hooks") -Destination (Join-Path $ProjectRoot ".github/hooks")
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot ".github/prompts") -Destination (Join-Path $ProjectRoot ".github/prompts")
 Copy-DirectoryContents -Source (Join-Path $HarnessRoot ".github/skills") -Destination (Join-Path $ProjectRoot ".github/skills")
@@ -415,4 +419,4 @@ Write-Host "Project ready at: $ProjectRoot" -ForegroundColor Green
 Write-Host "Next steps:"
 Write-Host "  1. code $ProjectRoot"
 Write-Host "  2. In VS Code, open Copilot Chat and switch to Agent Mode."
-Write-Host "  3. Start with the discovery prompt from LOCAL_VSCODE_COPILOT_PLAYBOOK.md."
+Write-Host "  3. In Copilot Chat, use a skill prompt from .github/prompts/ to start your first feature."
