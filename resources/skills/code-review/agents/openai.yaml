@@ -1,0 +1,7 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Run a risk-focused acceptance-criteria review"
+  default_prompt: "Use $code-review to review this completed change against the spec, diff, regressions, and missing tests."
+
+policy:
+  allow_implicit_invocation: true

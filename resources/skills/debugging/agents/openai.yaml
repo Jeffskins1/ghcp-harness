@@ -1,0 +1,7 @@
+interface:
+  display_name: "Debugging"
+  short_description: "Diagnose failures before making more changes"
+  default_prompt: "Use $debugging to diagnose this failure, isolate the root cause, and define the smallest correct fix target."
+
+policy:
+  allow_implicit_invocation: true

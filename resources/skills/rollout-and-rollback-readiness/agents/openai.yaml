@@ -1,0 +1,7 @@
+interface:
+  display_name: "Rollout And Rollback Readiness"
+  short_description: "Plan rollout phases and rollback safety"
+  default_prompt: "Use $rollout-and-rollback-readiness to define rollout phases, rollback triggers, and recovery posture for this launch."
+
+policy:
+  allow_implicit_invocation: true

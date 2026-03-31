@@ -1,0 +1,7 @@
+interface:
+  display_name: "Performance And Scalability Review"
+  short_description: "Review load, latency, and bottleneck risk"
+  default_prompt: "Use $performance-and-scalability-review to assess this design for load, latency, fan-out, and bottleneck risk."
+
+policy:
+  allow_implicit_invocation: true

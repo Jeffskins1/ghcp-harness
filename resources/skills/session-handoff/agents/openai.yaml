@@ -1,0 +1,7 @@
+interface:
+  display_name: "Session Handoff"
+  short_description: "Package context for a clean fresh session"
+  default_prompt: "Use $session-handoff to capture the current state, decisions, and re-entry prompt for the next session."
+
+policy:
+  allow_implicit_invocation: true

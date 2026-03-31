@@ -1,0 +1,7 @@
+interface:
+  display_name: "API Contract Review"
+  short_description: "Review API compatibility and contract risk"
+  default_prompt: "Use $api-contract-review to inspect this API or schema change for compatibility, validation, and client impact."
+
+policy:
+  allow_implicit_invocation: true

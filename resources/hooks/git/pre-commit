@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+# Git hook: pre-commit
+# Runs before every commit: secrets scan, .env guard, lock file check, lint
+# ─────────────────────────────────────────────────────────────────────────────
+
+ERRORS=0
+WARNINGS=0
+
+echo "Running pre-commit checks..."
+
+# ── 1. Block .env files ───────────────────────────────────────────────────────
+ENV_STAGED=$(git diff --cached --name-only | grep -E '(^|/)\.env($|\.)' | head -5)
+if [ -n "$ENV_STAGED" ]; then
+  echo "" >&2
+  echo "  ERROR: .env file staged for commit:" >&2
+  echo "$ENV_STAGED" | sed 's/^/    /' >&2
+  echo "  Add to .gitignore instead. Never commit secrets." >&2
+  ERRORS=$((ERRORS + 1))
+fi
+
+# ── 2. Secrets scan ───────────────────────────────────────────────────────────
+if command -v gitleaks &>/dev/null; then
+  if ! gitleaks protect --staged --no-banner -q 2>/dev/null; then
+    echo "" >&2
+    echo "  ERROR: gitleaks detected potential secrets in staged files." >&2
+    echo "  Run 'gitleaks protect --staged' for details." >&2
+    ERRORS=$((ERRORS + 1))
+  fi
+else
+  # Fallback: basic pattern scan on staged content
+  STAGED_CONTENT=$(git diff --cached --unified=0 2>/dev/null | grep '^+' | grep -v '^+++')
+  if echo "$STAGED_CONTENT" | grep -qiE \
+    '(password|passwd|api_key|apikey|secret_key|auth_token|access_token|private_key)\s*[=:]\s*["\x27`][^"\x27`]{8,}'; then
+    echo "" >&2
+    echo "  WARNING: Possible hardcoded secret in staged changes." >&2
+    echo "  Review your diff carefully before committing." >&2
+    WARNINGS=$((WARNINGS + 1))
+  fi
+fi
+
+# ── 3. Lock file without manifest change ─────────────────────────────────────
+LOCK_CHANGED=$(git diff --cached --name-only | \
+  grep -cE '(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Gemfile\.lock|go\.sum|poetry\.lock|Cargo\.lock)' || true)
+MANIFEST_CHANGED=$(git diff --cached --name-only | \
+  grep -cE '(^package\.json$|^Gemfile$|^go\.mod$|^pyproject\.toml$|^Cargo\.toml$|^requirements.*\.txt$)' || true)
+
+if [ "${LOCK_CHANGED:-0}" -gt 0 ] && [ "${MANIFEST_CHANGED:-0}" -eq 0 ]; then
+  echo "" >&2
+  echo "  WARNING: Lock file changed without a corresponding manifest change." >&2
+  echo "  Verify this is intentional (e.g. security patch via 'npm audit fix')." >&2
+  WARNINGS=$((WARNINGS + 1))
+fi
+
+# ── 4. Lint staged JS/TS files (if ESLint is configured) ─────────────────────
+STAGED_JS=$(git diff --cached --name-only | grep -E '\.(js|ts|jsx|tsx|mjs|cjs)$' | head -20)
+if [ -n "$STAGED_JS" ] && [ -f ".eslintrc*" -o -f "eslint.config*" -o -f "package.json" ]; then
+  if command -v npx &>/dev/null && npx eslint --version &>/dev/null 2>&1; then
+    if ! echo "$STAGED_JS" | xargs npx eslint --quiet 2>/dev/null; then
+      echo "" >&2
+      echo "  ERROR: ESLint found errors in staged files. Fix before committing." >&2
+      ERRORS=$((ERRORS + 1))
+    fi
+  fi
+fi
+
+# ── 5. Lint staged Python files (if configured) ──────────────────────────────
+STAGED_PY=$(git diff --cached --name-only | grep -E '\.py$' | head -20)
+if [ -n "$STAGED_PY" ]; then
+  if command -v ruff &>/dev/null; then
+    if ! echo "$STAGED_PY" | xargs ruff check --quiet 2>/dev/null; then
+      echo "" >&2
+      echo "  ERROR: ruff found errors in staged Python files. Fix before committing." >&2
+      ERRORS=$((ERRORS + 1))
+    fi
+  elif command -v flake8 &>/dev/null; then
+    if ! echo "$STAGED_PY" | xargs flake8 --quiet 2>/dev/null; then
+      echo "" >&2
+      echo "  ERROR: flake8 found errors in staged Python files. Fix before committing." >&2
+      ERRORS=$((ERRORS + 1))
+    fi
+  fi
+fi
+
+# ── Result ────────────────────────────────────────────────────────────────────
+echo ""
+if [ $ERRORS -gt 0 ]; then
+  echo "  Pre-commit: $ERRORS error(s), $WARNINGS warning(s). Commit aborted." >&2
+  exit 1
+elif [ $WARNINGS -gt 0 ]; then
+  echo "  Pre-commit: 0 errors, $WARNINGS warning(s). Commit allowed — review warnings."
+fi
+
+echo "  Pre-commit: all checks passed."
+exit 0

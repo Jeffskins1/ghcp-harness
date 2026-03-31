@@ -1,0 +1,247 @@
+# OpenSpec Advanced Template — v1
+# ──────────────────────────────────────────────────────────────────────────────
+# Use this template for features involving APIs, multi-service interactions,
+# schema changes, or significant architectural decisions.
+# Copy to specs/features/[feature-name].spec.md
+# ──────────────────────────────────────────────────────────────────────────────
+
+schema: openspec/v1/advanced
+feature: "[Feature Name]"
+status: draft  # draft | in-review | approved | implemented
+ticket: "[JIRA-123 or GitLab issue URL]"
+author: "[Name]"
+created: "[YYYY-MM-DD]"
+approved_by: "[Name, or leave blank until reviewed]"
+
+# ── INTENT ────────────────────────────────────────────────────────────────────
+intent:
+  summary: >
+    [One paragraph. What is being built, for whom, and why.
+    This is the agent's north star. Write it as if explaining to a smart
+    engineer who has never seen this codebase.]
+
+  success_definition: >
+    [How will we know this is done and working? Describe the observable
+    end state from the perspective of the user and the system.]
+
+  business_context: >
+    [Optional: why does this matter to the business right now?
+    Useful for communicating priority during MR review.]
+
+# ── ACCEPTANCE CRITERIA ───────────────────────────────────────────────────────
+acceptance_criteria:
+  # Each criterion is observable, specific, and maps to at least one test scenario.
+  - id: AC-1
+    description: "[e.g.: Authenticated user can trigger a CSV export from the dashboard]"
+    test_scenarios: [TS-1, TS-2]
+
+  - id: AC-2
+    description: "[e.g.: Export covers any user-selected window up to 90 days]"
+    test_scenarios: [TS-3, TS-4]
+
+  - id: AC-3
+    description: "[e.g.: User receives email with download link within 5 minutes]"
+    test_scenarios: [TS-5]
+
+# ── ARCHITECTURE ──────────────────────────────────────────────────────────────
+architecture:
+
+  layers_affected:
+    - layer: data
+      changes: "[e.g.: New export_jobs table. See data_models below.]"
+    - layer: service
+      changes: "[e.g.: New ExportService. EmailService extended.]"
+    - layer: api
+      changes: "[e.g.: New POST /exports and GET /exports/:id endpoints.]"
+    - layer: ui
+      changes: "[e.g.: New ExportButton component on AccountDashboard.]"
+
+  data_models:
+    ExportJob:
+      fields:
+        id: { type: uuid, constraints: [primary_key, not_null] }
+        user_id: { type: uuid, constraints: [not_null, foreign_key_users] }
+        status: { type: enum, values: [queued, processing, complete, failed], default: queued }
+        start_date: { type: date, constraints: [not_null] }
+        end_date: { type: date, constraints: [not_null] }
+        download_url: { type: text, constraints: [nullable] }
+        created_at: { type: timestamptz, default: now() }
+        completed_at: { type: timestamptz, constraints: [nullable] }
+      indexes:
+        - columns: [user_id, status]
+          type: btree
+
+  api_contracts:
+    - method: POST
+      path: /exports
+      auth: required
+      request_body:
+        start_date: { type: string, format: ISO8601_date, required: true }
+        end_date: { type: string, format: ISO8601_date, required: true }
+      responses:
+        201:
+          description: Export job created
+          body: { job_id: uuid, status: queued }
+        400:
+          description: Validation failure (e.g. window > 90 days)
+          body: { error: string, field: string }
+        401:
+          description: Unauthenticated
+
+    - method: GET
+      path: /exports/:id
+      auth: required
+      responses:
+        200:
+          description: Export job status
+          body: { job_id: uuid, status: string, download_url: "string | null" }
+        404:
+          description: Job not found or belongs to different user
+
+  dependencies:
+    internal:
+      - service: AuthService
+        usage: Verify authentication, get user_id from token
+        change: none
+      - service: EmailService
+        usage: Send export-ready notification
+        change: Add sendExportReady(userId, downloadUrl) method
+    external:
+      - service: "[e.g.: S3 / GCS / object storage]"
+        usage: Store generated CSV files
+        change: none
+
+  constraints:
+    - "[e.g.: Maximum export window is 90 days — hard limit to bound query cost]"
+    - "[e.g.: Export generation is async — no synchronous download response]"
+    - "[e.g.: Download URLs expire after 24 hours]"
+    - "[e.g.: One active export job per user at a time]"
+
+# ── TEST SCENARIOS ────────────────────────────────────────────────────────────
+test_scenarios:
+
+  - id: TS-1
+    name: Happy path — export triggered
+    criteria: [AC-1]
+    layer: integration
+    given: "Authenticated user with verified email and 30 days of transaction data"
+    when: "POST /exports with valid 30-day window"
+    then:
+      - "Response is 201 with job_id and status=queued"
+      - "ExportJob row created in database with correct user_id, dates, status"
+
+  - id: TS-2
+    name: Happy path — export completed, email sent
+    criteria: [AC-1, AC-3]
+    layer: service
+    given: "ExportJob with status=queued exists"
+    when: "ExportService processes the job"
+    then:
+      - "CSV file generated with correct columns and row count"
+      - "ExportJob updated to status=complete with download_url"
+      - "EmailService.sendExportReady called once with correct user and URL"
+
+  - id: TS-3
+    name: Window within 90-day limit accepted
+    criteria: [AC-2]
+    layer: unit
+    given: "Valid date range of exactly 90 days"
+    when: "ExportService.validateWindow called"
+    then: "Validation passes, no error thrown"
+
+  - id: TS-4
+    name: Window exceeding 90-day limit rejected
+    criteria: [AC-2]
+    layer: integration
+    given: "Authenticated user"
+    when: "POST /exports with 120-day window"
+    then:
+      - "Response is 400"
+      - "Error message references the 90-day limit"
+      - "No ExportJob created"
+
+  - id: TS-5
+    name: Unauthenticated request rejected
+    criteria: [AC-1]
+    layer: integration
+    given: "No Authorization header"
+    when: "POST /exports"
+    then:
+      - "Response is 401"
+      - "No ExportJob created"
+
+  - id: TS-6
+    name: Job failure handled gracefully
+    criteria: [AC-1]
+    layer: service
+    given: "ExportJob being processed, database query times out"
+    when: "ExportService encounters error"
+    then:
+      - "ExportJob updated to status=failed"
+      - "Error logged with job_id"
+      - "No email sent"
+
+# ── OUT OF SCOPE ──────────────────────────────────────────────────────────────
+out_of_scope:
+  - "[e.g.: PDF export — deferred to v2]"
+  - "[e.g.: Custom column selection — deferred to v2]"
+  - "[e.g.: Scheduled/recurring exports]"
+  - "[e.g.: Admin-triggered exports on behalf of users]"
+  - "[e.g.: Export history / audit log]"
+
+# ── IMPLEMENTATION PLAN ───────────────────────────────────────────────────────
+# Generated by writing-plans skill. Each task is one agent session.
+# After the last task completes the harness enters integration phase and blocks
+# release until the full suite is verified together:
+#   bash scripts/workflow/mark-integration-passed.sh
+implementation_plan:
+  tasks:
+    - id: 1
+      layer: data
+      description: "Add export_jobs table migration"
+      files:
+        - "migrations/YYYYMMDD_add_export_jobs.sql"
+      task_type: code
+      validation_modes: [tests]
+      tdd: required
+      evaluator_review: false
+      independence_policy: none
+      semantic_checks: []
+      done_when: "Migration runs cleanly on dev database. Schema matches data_models above."
+      depends_on: []
+
+    - id: 2
+      layer: service
+      description: "ExportService — validate window, queue job, process job"
+      files:
+        - "src/services/export.service.ts"
+        - "tests/unit/export.service.test.ts"
+      done_when: "Unit tests cover TS-2, TS-3, TS-4, TS-6. All green."
+      depends_on: [1]
+
+    - id: 3
+      layer: service
+      description: "EmailService — add sendExportReady method"
+      files:
+        - "src/services/email.service.ts"
+        - "tests/unit/email.service.test.ts"
+      done_when: "Unit test for sendExportReady passes. Existing email tests still green."
+      depends_on: [1]
+
+    - id: 4
+      layer: api
+      description: "POST /exports and GET /exports/:id endpoints"
+      files:
+        - "src/api/exports.controller.ts"
+        - "tests/integration/exports.test.ts"
+      done_when: "Integration tests cover TS-1, TS-4, TS-5. All green."
+      depends_on: [2, 3]
+
+    - id: 5
+      layer: ui
+      description: "ExportButton component on AccountDashboard"
+      files:
+        - "src/components/ExportButton.tsx"
+        - "tests/unit/ExportButton.test.tsx"
+      done_when: "Unit tests pass. Component renders all status states."
+      depends_on: [4]

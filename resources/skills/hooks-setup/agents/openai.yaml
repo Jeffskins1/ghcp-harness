@@ -1,0 +1,7 @@
+interface:
+  display_name: "Hooks Setup"
+  short_description: "Install shared hook guardrails for agents"
+  default_prompt: "Use $hooks-setup to plan or install the shared hook guardrails for this repository and its agent workflows."
+
+policy:
+  allow_implicit_invocation: true

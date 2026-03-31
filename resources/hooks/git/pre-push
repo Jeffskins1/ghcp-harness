@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+REMOTE="$1"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/../common.sh"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue
+
+  if printf '%s' "$remote_ref" | grep -qE 'refs/heads/(main|master|develop|production|release/.*)$'; then
+    CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    PROTECTED_BRANCH="$(printf '%s' "$remote_ref" | sed 's|refs/heads/||')"
+
+    if [ "$CURRENT_BRANCH" = "$PROTECTED_BRANCH" ]; then
+      echo "" >&2
+      echo "ERROR: direct push to '$PROTECTED_BRANCH' is blocked." >&2
+      echo "Create a feature branch and open an MR instead." >&2
+      echo "" >&2
+      exit 1
+    fi
+  fi
+done
+
+TEST_CMD="$(hook_require_test_command 2>/dev/null || true)"
+if [ -z "$TEST_CMD" ]; then
+  echo "ERROR: missing exact test command in .github/copilot-instructions.md or AGENTS.md." >&2
+  echo "Add a '## Exact Test Commands' section with a full-suite command before pushing." >&2
+  exit 1
+fi
+
+echo "Running tests before push: $TEST_CMD"
+if ! eval "$TEST_CMD"; then
+  echo "" >&2
+  echo "ERROR: tests failed. Fix them before pushing." >&2
+  echo "Command: $TEST_CMD" >&2
+  exit 1
+fi
+
+echo "Tests passed."
+exit 0

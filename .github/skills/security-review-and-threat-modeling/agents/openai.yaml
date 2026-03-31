@@ -1,0 +1,7 @@
+interface:
+  display_name: "Security Review And Threat Modeling"
+  short_description: "Review trust boundaries and abuse paths"
+  default_prompt: "Use $security-review-and-threat-modeling to inspect this change for threats, trust boundaries, controls, and abuse cases."
+
+policy:
+  allow_implicit_invocation: true

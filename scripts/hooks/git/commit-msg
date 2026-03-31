@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+# Git hook: commit-msg
+# Enforces conventional commit format on every commit message
+# ─────────────────────────────────────────────────────────────────────────────
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Allow merge commits, revert commits, and fixup/squash prefixes
+if echo "$COMMIT_MSG" | grep -qE '^(Merge |Revert |fixup! |squash! )'; then
+  exit 0
+fi
+
+# Allow empty commits (--allow-empty)
+[ -z "$(echo "$COMMIT_MSG" | sed '/^#/d' | tr -d '[:space:]')" ] && exit 0
+
+PATTERN='^(feat|fix|chore|refactor|test|docs|style|perf|ci|build|revert)(\(.{1,30}\))?: .{1,120}$'
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo "" >&2
+  echo "─────────────────────────────────────────────────" >&2
+  echo "  COMMIT REJECTED: Non-conventional commit format" >&2
+  echo "─────────────────────────────────────────────────" >&2
+  echo "" >&2
+  echo "  Required: <type>(<scope>): <description>" >&2
+  echo "" >&2
+  echo "  Types:    feat  fix  chore  refactor  test  docs" >&2
+  echo "            style  perf  ci  build  revert" >&2
+  echo "" >&2
+  echo "  Examples:" >&2
+  echo "    feat(auth): add OAuth2 login flow" >&2
+  echo "    fix(api): handle null response from payment gateway" >&2
+  echo "    test(user): add edge cases for email validation" >&2
+  echo "    chore: update dependencies to latest patch versions" >&2
+  echo "" >&2
+  echo "  Your message:" >&2
+  echo "    $COMMIT_MSG" >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0

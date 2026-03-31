@@ -1,0 +1,14 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime agent state (generated per repo that uses the harness)
+.github/agent-state/
+
+# OS
+.DS_Store
+Thumbs.db

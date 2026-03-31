@@ -1,0 +1,7 @@
+interface:
+  display_name: "IntelliJ Repo Setup"
+  short_description: "Bootstrap IntelliJ and Copilot repo setup"
+  default_prompt: "Use $intellij-repo-setup to inspect this repo and create the IntelliJ-focused instructions and spec scaffolding."
+
+policy:
+  allow_implicit_invocation: true

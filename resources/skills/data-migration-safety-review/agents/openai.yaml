@@ -1,0 +1,7 @@
+interface:
+  display_name: "Data Migration Safety Review"
+  short_description: "Review migration order, safety, and rollback"
+  default_prompt: "Use $data-migration-safety-review to plan the migration sequence, rollback posture, and validation checks for this change."
+
+policy:
+  allow_implicit_invocation: true

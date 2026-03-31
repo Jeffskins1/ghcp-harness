@@ -1,0 +1,17 @@
+# Repo-level protected paths for coding-agent hooks.
+# One pattern per line. Substring match is sufficient.
+
+# Shared agent context and hook configuration
+AGENTS.md
+.github/hooks/
+.codex/hooks.json
+
+# Canonical reusable workflow assets
+resources/skills/
+resources/instructions/github-instructions-template.md
+resources/openspec/
+
+# Sensitive local config examples
+.env
+.env.production
+.env.staging

@@ -1,0 +1,49 @@
+{
+  "hooks": [
+    {
+      "event": "SessionStart",
+      "command": "bash scripts/hooks/session-start.sh"
+    },
+    {
+      "event": "UserPromptSubmit",
+      "command": "bash scripts/hooks/spec-guard.sh"
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit",
+      "command": "bash scripts/hooks/file-guard.sh",
+      "timeout": 30
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Write|Edit",
+      "command": "bash scripts/hooks/post-edit-tdd-guard.sh",
+      "timeout": 30
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "command": "bash scripts/hooks/bash-guard.sh",
+      "timeout": 30
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Bash",
+      "command": "bash scripts/hooks/test-failure-capture.sh",
+      "timeout": 30
+    },
+    {
+      "event": "PreCompact",
+      "command": "bash scripts/hooks/pre-compact-handoff.sh"
+    },
+    {
+      "event": "TaskCompleted",
+      "command": "bash scripts/hooks/release-gate.sh",
+      "timeout": 120
+    },
+    {
+      "event": "Stop",
+      "command": "bash scripts/hooks/lesson-capture-gate.sh"
+    }
+  ]
+}
