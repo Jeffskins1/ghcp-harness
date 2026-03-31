@@ -32,7 +32,7 @@ resources/          Canonical source for all harness assets
   hooks/            Hook scripts (source of truth)
   skills/           Skill prompt files per workflow mode
   instructions/     Copilot instructions template
-  openspec/         Spec templates (basic and advanced)
+  spec/             Spec templates (basic and advanced)
   templates/        Evaluator result and entry templates
 
 scripts/
@@ -89,7 +89,7 @@ bash scripts/hooks/git/install.sh
 
 ### 4. Create a spec for your first feature
 
-Copy `resources/openspec/basic-spec-template.json` or `resources/openspec/advanced-spec-template.yml` to `specs/features/[feature-name].spec.md` and fill it in.
+Copy `resources/spec/basic-spec-template.json` or `resources/spec/advanced-spec-template.yml` to `specs/features/[feature-name].spec.md` and fill it in.
 
 ---
 

@@ -128,7 +128,7 @@ If it is unclear whether Codex CLI is used, create the file anyway. It costs
 nothing and ensures any developer who switches to Codex CLI finds the repo ready.
 
 ### Step 6 - Create specs/openspec.md and specs/arch.md
-Create `specs/openspec.md` using `resources/openspec/basic-spec-template.json` as the
+Create `specs/openspec.md` using `resources/spec/basic-spec-template.json` as the
 structural reference. Leave intent fields blank - these are filled per feature.
 
 Create `specs/arch.md` with the following sections, populated from your Step 1 findings:

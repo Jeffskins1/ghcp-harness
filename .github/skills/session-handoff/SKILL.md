@@ -154,3 +154,20 @@ python scripts/workflow/write-evaluator-result.py .github/agent-state/evaluator-
 
 The release gate will block completion if the evaluator result is missing,
 malformed, still pending, or failed.
+
+## Integration Phase Handoff
+
+When all tasks are complete, the harness sets `current_phase: "integration"`.
+If a session ends in this phase, the re-entry prompt should include:
+
+```
+All tasks are complete. The harness is in integration phase.
+Run the full-suite integration check before continuing:
+
+  bash scripts/workflow/mark-integration-passed.sh
+
+This runs the complete test suite across all tasks together and records the
+result. The release gate will not open until this passes.
+```
+
+Do not open an MR or mark the feature done until this step is recorded.

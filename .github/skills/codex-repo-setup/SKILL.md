@@ -137,7 +137,7 @@ After writing the file, print a short summary of what you filled in and ask the
 developer to confirm the test command is correct before continuing.
 
 ### Step 4 - Create specs/openspec.md and specs/arch.md
-Create `specs/openspec.md` using `resources/openspec/basic-spec-template.json` as the
+Create `specs/openspec.md` using `resources/spec/basic-spec-template.json` as the
 structural reference. Leave intent fields blank - these are filled per feature.
 
 Create `specs/arch.md` with the following sections, populated from your Step 1 findings:

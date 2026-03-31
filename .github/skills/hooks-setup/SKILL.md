@@ -201,10 +201,12 @@ Example structure (adapt event names and commands to your repo):
 Commit this file to version control. All team members get the same hooks
 automatically when they pull, regardless of which IDE they use.
 
-`TaskCompleted` is where the harness enforces both Milestone 2 TDD proof and
-Milestone 3 evaluator verdicts. For tasks marked `Evaluator review: YES`, the
+`TaskCompleted` is where the harness enforces TDD proof, evaluator verdicts,
+and the feature integration gate. For tasks marked `Evaluator review: YES`, the
 release gate only allows completion after a valid evaluator result artifact has
-been recorded into `.github/agent-state/active-run.json`.
+been recorded into `.github/agent-state/active-run.json`. When all tasks are
+complete, the gate additionally requires a full-suite integration run recorded
+via `bash scripts/workflow/mark-integration-passed.sh` before release is allowed.
 
 ### Step 4 - Wire Codex CLI hooks (if team uses Codex CLI)
 

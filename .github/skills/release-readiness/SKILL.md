@@ -24,7 +24,7 @@ through the team's delivery process.
 ## When to Invoke
 
 Invoke this skill when:
-- Tests are green
+- All tasks are complete and the full-suite integration run has passed
 - Review findings are resolved or documented
 - An MR description or handoff summary is needed
 
@@ -39,6 +39,8 @@ Run this skill at the MR-prep hook and failure-capture hook:
 Confirm:
 - active spec is linked in the prompt, MR, or handoff
 - acceptance criteria are covered by tests or explicitly deferred
+- full-suite integration run has been recorded (`feature_integration.full_suite_passed: true` in
+  `.github/agent-state/active-run.json`) — if not, run `bash scripts/workflow/mark-integration-passed.sh`
 - constraints and failures discovered during the session were written back to
   `copilot-instructions.md` or `AGENTS.md`
 - commands needed for reviewers are documented
@@ -49,7 +51,7 @@ Confirm:
 ```text
 Ready to ship:
 - Spec linked
-- Local tests green
+- Full-suite integration run recorded (2026-03-31T14:22:00Z)
 - Review findings resolved
 - Failure log updated
 

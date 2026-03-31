@@ -130,7 +130,21 @@ Semantic checks:
   path: docs/example.md
 ```
 
-### Step 6 - Flag session boundary risks
+### Step 6 - Note the integration phase
+
+After the last task completes, the harness automatically sets
+`current_phase: "integration"` and blocks the release gate until a full-suite
+run is recorded. This is not a task — it is a harness-enforced phase transition.
+
+Mention it in the plan so the agent is not surprised:
+
+```markdown
+**After all tasks complete:** Run `bash scripts/workflow/mark-integration-passed.sh`
+to execute the full suite across all changes together. The release gate will
+not open until this passes.
+```
+
+### Step 7 - Flag session boundary risks
 Review the full task list and identify any task that is likely to push a
 session to context limits. Mark these explicitly:
 
@@ -141,7 +155,7 @@ Warning: Session boundary risk: Tasks 3-4 together may exhaust context.
 
 This makes handoffs planned rather than reactive.
 
-### Step 7 - Sync workflow state
+### Step 8 - Sync workflow state
 After the plan is confirmed, ensure the harness can derive a machine-readable
 task snapshot from the active spec. The active run state should capture:
 - active spec path

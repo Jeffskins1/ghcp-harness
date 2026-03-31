@@ -9,7 +9,7 @@ AGENTS.md
 # Canonical reusable workflow assets
 resources/skills/
 resources/instructions/github-instructions-template.md
-resources/openspec/
+resources/spec/
 
 # Sensitive local config examples
 .env
