@@ -94,6 +94,30 @@ if (Test-Path -LiteralPath $ProjectRoot) {
     $null = New-Item -ItemType Directory -Path $ProjectRoot
 }
 
+Write-Step "Checking Python version"
+$pythonCmd = $null
+foreach ($cmd in @("python", "python3")) {
+    if (Test-CommandExists -Name $cmd) {
+        $pythonCmd = $cmd
+        break
+    }
+}
+
+if ($null -eq $pythonCmd) {
+    Write-Warning "Python was not found in PATH. Workflow scripts require Python 3.10+. Install from python.org before running workflow commands."
+} else {
+    $pythonVersion = & $pythonCmd --version 2>&1
+    if ($pythonVersion -match "Python (\d+)\.(\d+)") {
+        $major = [int]$Matches[1]
+        $minor = [int]$Matches[2]
+        if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 10)) {
+            Write-Warning "Python $major.$minor found, but workflow scripts require Python 3.10+. Upgrade from python.org before running workflow commands."
+        } else {
+            Write-Host "Python $major.$minor OK." -ForegroundColor Green
+        }
+    }
+}
+
 Write-Step "Creating baseline folders"
 $folders = @(
     ".github",
